@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "716080745800",
+    "project_id": "valentine-garage-24b2c",
+    "storage_bucket": "valentine-garage-24b2c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:716080745800:android:f6fad5607380c2359db77d",
+        "android_client_info": {
+          "package_name": "com.example.garage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "716080745800-ms3g9nq05shkg1f13ssfk7hjus7k88cc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCv1yzfwsbEZw_ZCbpecLvD2FPgQatytH0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "716080745800-ms3g9nq05shkg1f13ssfk7hjus7k88cc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
