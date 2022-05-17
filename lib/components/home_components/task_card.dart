@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:garage/components/home_components/countdown_painter.dart';
 import 'package:garage/constants.dart';
@@ -19,10 +21,16 @@ class TaskCard extends StatelessWidget {
     DateFormat dateFormat = DateFormat("hh:mm a");
 
     Size size = MediaQuery.of(context).size;
+
     int noOfTasks = task.assignedTask!.length;
+
     int numOfCompleted = task.assignedTask!
         .where((element) => element.isComplete == true)
         .length;
+
+    // print(task.assignedTask);
+    //print(inspect(vehiclesList[1].assignedTask));
+    // int numOfCompleted = 4;
     int tasksLeft = noOfTasks - numOfCompleted;
 
     double percent = (numOfCompleted / noOfTasks) * 100;

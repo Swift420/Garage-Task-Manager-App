@@ -98,8 +98,8 @@ class _AddToHomeState extends State<AddToHome> {
                     _task?.time = now;
                     _task?.assignedTask = [];
 
-                    await FirebaseFirestore.instance
-                        .collection("vehicles")
+                    DocumentReference docRef = await FirebaseFirestore.instance
+                        .collection('vehicles')
                         .add({
                       'title': _vehicleController.text,
                       'owner': _ownerController.text,
@@ -121,6 +121,36 @@ class _AddToHomeState extends State<AddToHome> {
                         },
                       ],
                     });
+                    String id = docRef.id;
+
+                    await FirebaseFirestore.instance
+                        .collection('vehicles')
+                        .doc(id)
+                        .update({'id': id});
+
+                    /* await FirebaseFirestore.instance
+                        .collection("vehicles")
+                        .add({
+                      'title': _vehicleController.text,
+                      'owner': _ownerController.text,
+                      'time': now,
+                      'assignedTask': [
+                        {
+                          "name": "John",
+                          "taskType": "Mechinical",
+                          "employeeTask": "Gear Box",
+                          "isComplete": true,
+                          "vehicle": "18 Wheeler",
+                        },
+                        {
+                          "name": "Jake",
+                          "taskType": "Electro",
+                          "employeeTask": "Gear Box",
+                          "isComplete": true,
+                          "vehicle": "Semi Truck",
+                        },
+                      ],
+                    }); */
                   }
                   setState(() {
                     /* recentTasks.insert(

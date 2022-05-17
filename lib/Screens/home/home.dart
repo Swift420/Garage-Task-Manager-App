@@ -19,7 +19,14 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _currentIndex = 0;
-  List<Object> _vehiclesList = [];
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    getVehicleList();
+    // print(vehiclesList);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,20 +48,20 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 ListView.builder(
-                  itemCount: recentTasks.length,
+                  itemCount: vehiclesList.length, //recentTasks.length,
                   itemBuilder: (context, index) => InkWell(
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => DetailsScreen(
-                            task: recentTasks[index],
+                            task: vehiclesList[index],
                           ),
                         ),
                       );
                     },
                     child: TaskCard(
                       itemIndex: index,
-                      task: recentTasks[index],
+                      task: vehiclesList[index],
                     ),
                   ),
                 ),
@@ -74,7 +81,7 @@ class _HomeState extends State<Home> {
         .get();
 
     setState(() {
-      _vehiclesList = List.from(data.docs)
+      vehiclesList = List.from(data.docs.map((doc) => Task.fromSnapshot(doc)));
     });
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:garage/constants.dart';
 import 'package:garage/models/task.dart';
@@ -133,13 +134,28 @@ class _addTaskState extends State<addTask> {
                   side: BorderSide(width: 3, color: Colors.orange)),
               child: Text("Add Task"),
               onPressed: () {
+                print(widget.task.id);
                 setState(() {
-                  widget.task.assignedTask!.add(AssignedTask(
+                  FirebaseFirestore.instance
+                      .collection("vehicles")
+                      .doc(widget.task.id)
+                      .update({
+                    "assignedTask": FieldValue.arrayUnion([
+                      {
+                        "name": selectedItem!,
+                        "taskType": selectedTask!,
+                        "employeeTask": _briefController.text,
+                        "isComplete": false,
+                        "vehicle": widget.task.title!
+                      }
+                    ])
+                  });
+                  /*widget.task.assignedTask!.add(AssignedTask(
                       name: selectedItem!,
                       taskType: selectedTask!,
                       employeeTask: _briefController.text,
                       isComplete: false,
-                      vehicle: widget.task.title!));
+                      vehicle: widget.task.title!)); */
                 });
                 Navigator.of(context).pop();
               },

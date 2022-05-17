@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:garage/Screens/addToHome/add_to_home.dart';
 import 'package:garage/Screens/employee/employee_screen.dart';
@@ -14,6 +15,7 @@ class BottomNav extends StatefulWidget {
 
 class _BottomNavState extends State<BottomNav> {
   int _currentIndex = 1;
+  final firestoreInstance = FirebaseFirestore.instance;
   List _widgetOptions = [AddToHome(), Home(), EmployeeScreen()];
   @override
   Widget build(BuildContext context) {
@@ -51,9 +53,18 @@ class _BottomNavState extends State<BottomNav> {
           setState(() {
             _currentIndex = index;
           });
+          _onPressed();
         },
       ),
       body: _widgetOptions.elementAt(_currentIndex),
     );
+  }
+
+  void _onPressed() {
+    firestoreInstance.collection("vehicles").get().then((querySnapshot) {
+      querySnapshot.docs.forEach((result) {
+        print(result.data());
+      });
+    });
   }
 }

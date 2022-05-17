@@ -29,4 +29,11 @@ class AssignedTask {
     data['vehicle'] = this.vehicle;
     return data;
   }
+
+  AssignedTask.fromMap(Map<String, dynamic> taskMap)
+      : name = taskMap["title"],
+        taskType = taskMap["owner"],
+        employeeTask = taskMap["time"],
+        isComplete = taskMap["isComplete"],
+        vehicle = taskMap["vehicle"];
 }
