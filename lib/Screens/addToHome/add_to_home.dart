@@ -104,22 +104,7 @@ class _AddToHomeState extends State<AddToHome> {
                       'title': _vehicleController.text,
                       'owner': _ownerController.text,
                       'time': now,
-                      'assignedTask': [
-                        {
-                          "name": "John",
-                          "taskType": "Mechinical",
-                          "employeeTask": "Gear Box",
-                          "isComplete": true,
-                          "vehicle": "18 Wheeler",
-                        },
-                        {
-                          "name": "Jake",
-                          "taskType": "Electro",
-                          "employeeTask": "Gear Box",
-                          "isComplete": true,
-                          "vehicle": "Semi Truck",
-                        },
-                      ],
+                      'assignedTask': [],
                     });
                     String id = docRef.id;
 

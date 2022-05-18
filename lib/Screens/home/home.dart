@@ -7,8 +7,10 @@ import 'package:garage/components/home_components/task_card.dart';
 import 'package:garage/constants.dart';
 import 'package:garage/models/task.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:math';
 
 import 'package:garage/components/home_components/recent_tasks.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -30,6 +32,18 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    RefreshController _refreshController =
+        RefreshController(initialRefresh: false);
+
+    void _onRefresh() async {
+      // monitor network fetch
+      getVehicleList();
+      await Future.delayed(Duration(milliseconds: 1000));
+      // if failed,use refreshFailed()
+
+      _refreshController.refreshCompleted();
+    }
+
     return Scaffold(
       backgroundColor: Color(0xFF212121), //0xFF212121
       body: SafeArea(
@@ -47,21 +61,26 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-                ListView.builder(
-                  itemCount: vehiclesList.length, //recentTasks.length,
-                  itemBuilder: (context, index) => InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DetailsScreen(
-                            task: vehiclesList[index],
+                SmartRefresher(
+                  controller: _refreshController,
+                  onRefresh: _onRefresh,
+                  child: ListView.builder(
+                    itemCount: vehiclesList.length, //recentTasks.length,
+                    key: Key("${Random().nextDouble()}"),
+                    itemBuilder: (context, index) => InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => DetailsScreen(
+                              task: vehiclesList[index],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: TaskCard(
-                      itemIndex: index,
-                      task: vehiclesList[index],
+                        );
+                      },
+                      child: TaskCard(
+                        itemIndex: index,
+                        task: vehiclesList[index],
+                      ),
                     ),
                   ),
                 ),

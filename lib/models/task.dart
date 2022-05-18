@@ -93,6 +93,8 @@ class Task {
 
 List<Task> recentTasks = [];
 List<Task> vehiclesList = [];
+List<Task> recentVehiclesList = [];
+
 /*
 List<Task> recentTasks = [
   Task(

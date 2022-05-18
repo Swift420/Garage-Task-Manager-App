@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:garage/Screens/addToHome/add_to_home.dart';
 import 'package:garage/Screens/employee/employee_screen.dart';
 import 'package:garage/Screens/home/home.dart';
+import 'package:garage/Screens/recentHistory/recent_history.dart';
 import 'package:garage/models/task.dart';
 
 class BottomNav extends StatefulWidget {
@@ -23,6 +24,37 @@ class _BottomNavState extends State<BottomNav> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
+        actions: [
+          InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => RecentHisotyVehicles(),
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(
+                right: 20.0,
+                top: 10,
+              ),
+              child: Icon(
+                Icons.history,
+                size: 30,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              right: 20.0,
+              top: 10,
+            ),
+            child: Icon(
+              Icons.logout,
+              size: 30,
+            ),
+          ),
+        ],
       ),
       backgroundColor: Color(0xFF212121),
       bottomNavigationBar: BottomNavigationBar(

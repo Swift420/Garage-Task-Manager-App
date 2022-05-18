@@ -1,8 +1,14 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:garage/Screens/home/home.dart';
 import 'package:garage/components/details_components/add_task.dart';
 import 'package:garage/constants.dart';
 import 'package:garage/models/task.dart';
 import 'package:garage/models/task_class.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class DetailsScreen extends StatefulWidget {
   final Task task;
@@ -15,6 +21,22 @@ class DetailsScreen extends StatefulWidget {
 class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
+    RefreshController _refreshController =
+        RefreshController(initialRefresh: false);
+
+    void _onRefresh() async {
+      // monitor network fetch
+      getVehicleList();
+      await Future.delayed(Duration(milliseconds: 1000));
+      // if failed,use refreshFailed()
+
+      _refreshController.refreshCompleted();
+    }
+
+    int numOfCompletedInspection = widget.task.assignedTask!
+        .where((element) => element.isComplete == false)
+        .length;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -25,21 +47,51 @@ class _DetailsScreenState extends State<DetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 20.0, bottom: 20),
-              child: Container(
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                      primary: Colors.orange,
-                      side: BorderSide(width: 3, color: Colors.orange)),
-                  child: Text("Add New Task"),
-                  onPressed: () {
-                    setState(() {
-                      _addNewTaskModal(context, widget.task);
-                    });
-                  },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0, bottom: 20),
+                  child: Container(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                          primary: Colors.orange,
+                          side: BorderSide(width: 3, color: Colors.orange)),
+                      child: Text("Add New Task"),
+                      onPressed: () {
+                        setState(() {
+                          _addNewTaskModal(context, widget.task);
+                        });
+                      },
+                    ),
+                  ),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0, bottom: 20),
+                  child: Container(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                          primary: Colors.orange,
+                          side:
+                              BorderSide(width: 3, color: Colors.green[600]!)),
+                      child: Text(
+                        "Pass Inspection",
+                        style: TextStyle(color: Colors.green[600]),
+                      ),
+                      onPressed: () async {
+                        if (numOfCompletedInspection == 0) {
+                          passInspection();
+                        } else {
+                          showToast();
+                        }
+
+                        //print(jsonEncode(widget.task.assignedTask));
+                        // setState(() {});
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: kDefaultPadding / 2),
             Expanded(
@@ -54,12 +106,27 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   ),
                 ),
                 SizedBox(height: 20),
-                ListView.builder(
-                    itemCount: widget.task.assignedTask!.length,
-                    itemBuilder: ((context, index) => ServiceTask(
-                          task: widget.task,
-                          count: index,
-                        ))),
+                SmartRefresher(
+                  controller: _refreshController,
+                  onRefresh: _onRefresh,
+                  child: ListView.builder(
+                      itemCount: widget.task.assignedTask!.length,
+                      itemBuilder: ((context, index) => InkWell(
+                            child: ServiceTask(
+                              task: widget.task,
+                              count: index,
+                            ),
+                            onLongPress: () {
+                              setState(() {
+                                widget.task.assignedTask![index].isComplete =
+                                    false;
+                              });
+
+                              print(
+                                  widget.task.assignedTask![index].isComplete);
+                            },
+                          ))),
+                ),
               ],
             )),
           ],
@@ -79,6 +146,38 @@ class _DetailsScreenState extends State<DetailsScreen> {
           );
         });
   }
+
+  Future getVehicleList() async {
+    var data = await FirebaseFirestore.instance
+        .collection("vehicles")
+        .orderBy("time", descending: true)
+        .get();
+
+    setState(() {
+      vehiclesList = List.from(data.docs.map((doc) => Task.fromSnapshot(doc)));
+    });
+  }
+
+  Future passInspection() async {
+    DocumentReference docRef =
+        await FirebaseFirestore.instance.collection('recentHistory').add({
+      'title': widget.task.title,
+      'owner': widget.task.owner,
+      'time': widget.task.time,
+      'assignedTask': widget.task.assignedTask?.map((a) => a.toJson()).toList()
+    });
+    String id = docRef.id;
+
+    await FirebaseFirestore.instance
+        .collection('recentHistory')
+        .doc(id)
+        .update({'id': id});
+  }
+
+  void showToast() => Fluttertoast.showToast(
+        msg: "Can only pass inspection if all tasks are green",
+        fontSize: 18,
+      );
 }
 
 class ServiceTask extends StatelessWidget {
