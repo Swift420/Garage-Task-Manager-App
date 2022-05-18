@@ -17,9 +17,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'Flutter Animated Login',
-      debugShowCheckedModeBanner: false,
-      /* theme: ThemeData(
+        title: 'Flutter Animated Login',
+        debugShowCheckedModeBanner: false,
+        /* theme: ThemeData(
           primaryColor: kPrimaryColor,
           textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme)),
       darkTheme: ThemeData(
@@ -27,8 +27,8 @@ class MyApp extends StatelessWidget {
         // textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
         /* dark theme settings */
       ), */
-      //themeMode: ThemeMode.dark,
-      home: BottomNav(),
-    );
+        //themeMode: ThemeMode.dark,
+        home: LoginPage(title: '') // BottomNav(),
+        );
   }
 }

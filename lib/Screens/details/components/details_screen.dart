@@ -81,6 +81,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       onPressed: () async {
                         if (numOfCompletedInspection == 0) {
                           passInspection();
+
+                          removeFromVehicles();
+                          Future.delayed(Duration(seconds: 1), () {
+                            // <-- Delay here
+                            Navigator.pop(context);
+                          });
                         } else {
                           showToast();
                         }
@@ -116,15 +122,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               task: widget.task,
                               count: index,
                             ),
-                            onLongPress: () {
-                              setState(() {
-                                widget.task.assignedTask![index].isComplete =
-                                    false;
-                              });
-
-                              print(
-                                  widget.task.assignedTask![index].isComplete);
-                            },
+                            // onLongPress: () async {},
                           ))),
                 ),
               ],
@@ -156,6 +154,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
     setState(() {
       vehiclesList = List.from(data.docs.map((doc) => Task.fromSnapshot(doc)));
     });
+  }
+
+  Future removeFromVehicles() async {
+    await FirebaseFirestore.instance
+        .collection('vehicles')
+        .doc(widget.task.id)
+        .delete();
   }
 
   Future passInspection() async {

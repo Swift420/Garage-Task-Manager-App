@@ -24,6 +24,18 @@ class _RecentHisotyVehiclesState extends State<RecentHisotyVehicles> {
 
   @override
   Widget build(BuildContext context) {
+    RefreshController _refreshController =
+        RefreshController(initialRefresh: false);
+
+    void _onRefresh() async {
+      // monitor network fetch
+      getRecentVehicleList();
+      await Future.delayed(Duration(milliseconds: 1000));
+      // if failed,use refreshFailed()
+
+      _refreshController.refreshCompleted();
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -46,22 +58,38 @@ class _RecentHisotyVehiclesState extends State<RecentHisotyVehicles> {
                   ),
                 ),
 
-                ListView.builder(
-                  itemCount: recentVehiclesList.length, //recentTasks.length,
+                SmartRefresher(
+                  controller: _refreshController,
+                  onRefresh: _onRefresh,
+                  child: ListView.builder(
+                    itemCount: recentVehiclesList.length, //recentTasks.length,
 
-                  itemBuilder: (context, index) => InkWell(
-                    onTap: () {
-                      /* Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DetailsScreen(
-                            task: recentVehiclesList[index],
+                    itemBuilder: (context, index) => InkWell(
+                      onTap: () {
+                        /* Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => DetailsScreen(
+                              task: recentVehiclesList[index],
+                            ),
                           ),
-                        ),
-                      );*/
-                    },
-                    child: TaskCard(
-                      itemIndex: index,
-                      task: recentVehiclesList[index],
+                        );*/
+                      },
+                      child: TaskCard(
+                        itemIndex: index,
+                        task: recentVehiclesList[index],
+                      ),
+                      onDoubleTap: () {
+                        print(recentVehiclesList[index].id);
+                      },
+                      onLongPress: () async {
+                        await FirebaseFirestore.instance
+                            .collection('recentHistory')
+                            .doc(recentVehiclesList[index].id)
+                            .delete();
+                        setState(() {
+                          getRecentVehicleList();
+                        });
+                      },
                     ),
                   ),
                 ),

@@ -26,7 +26,7 @@ class _HomeState extends State<Home> {
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-    getVehicleList();
+    //getVehicleList();
     // print(vehiclesList);
   }
 
@@ -84,7 +84,6 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-                //TaskCard(),
               ],
             )),
           ],

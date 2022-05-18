@@ -1,155 +1,117 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:garage/Screens/login/components/cancel_button.dart';
-import 'package:garage/Screens/login/components/login_form.dart';
-import 'package:garage/Screens/login/components/register_form.dart';
-import 'package:garage/constants.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key, required this.title}) : super(key: key);
+  final String title;
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
-    with SingleTickerProviderStateMixin {
-  bool isLogin = true;
-  late Animation<double> containerSize;
-  AnimationController? animationController;
-  Duration animationDuration = Duration(milliseconds: 270);
-
-  @override
-  void initState() {
-    super.initState();
-    animationController =
-        AnimationController(vsync: this, duration: animationDuration);
-  }
-
-  @override
-  void dispose() {
-    animationController!.dispose();
-    super.dispose();
-  }
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  var rememberValue = false;
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
-    double viewInset = MediaQuery.of(context)
-        .viewInsets
-        .bottom; // we are using this to determine Keyboard is opened or not
-    double defaultLoginSize = size.height - (size.height * 0.2);
-    double defaultRegisterSize = size.height - (size.height * 0.1);
-
-    containerSize =
-        Tween<double>(begin: size.height * 0.1, end: defaultRegisterSize)
-            .animate(CurvedAnimation(
-                parent: animationController!, curve: Curves.linear));
-
     return Scaffold(
-      body: Stack(
-        children: [
-          // Lets add some decorations
-          Positioned(
-              top: 100,
-              right: -50,
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: kPrimaryColor),
-              )),
-
-          Positioned(
-              top: -50,
-              left: -50,
-              child: Container(
-                width: 200,
-                height: 200,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
-                    color: kPrimaryColor),
-              )),
-
-          // Cancel Button
-          CancelButton(
-            isLogin: isLogin,
-            animationDuration: animationDuration,
-            size: size,
-            animationController: animationController,
-            tapEvent: isLogin
-                ? null
-                : () {
-                    // returning null to disable the button
-                    animationController!.reverse();
-                    setState(() {
-                      isLogin = !isLogin;
-                    });
-                  },
-          ),
-
-          // Login Form
-          LoginForm(
-              isLogin: isLogin,
-              animationDuration: animationDuration,
-              size: size,
-              defaultLoginSize: defaultLoginSize),
-
-          // Register Container
-          AnimatedBuilder(
-            animation: animationController!,
-            builder: (context, child) {
-              if (viewInset == 0 && isLogin) {
-                return buildRegisterContainer();
-              } else if (!isLogin) {
-                return buildRegisterContainer();
-              }
-
-              // Returning empty container to hide the widget
-              return Container();
-            },
-          ),
-
-          // Register Form
-          RegisterForm(
-              isLogin: isLogin,
-              animationDuration: animationDuration,
-              size: size,
-              defaultLoginSize: defaultRegisterSize),
-        ],
-      ),
-    );
-  }
-
-  Widget buildRegisterContainer() {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        width: double.infinity,
-        height: containerSize.value,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(100),
-              topRight: Radius.circular(100),
+      backgroundColor: Color(0xFF212121),
+      body: Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              'Sign in',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 40,
+                color: Colors.white,
+              ),
             ),
-            color: kBackgroundColor),
-        alignment: Alignment.center,
-        child: GestureDetector(
-          onTap: !isLogin
-              ? null
-              : () {
-                  animationController!.forward();
-
-                  setState(() {
-                    isLogin = !isLogin;
-                  });
-                },
-          child: isLogin
-              ? Text(
-                  "Don't have an account? Sign up",
-                  style: TextStyle(color: kPrimaryColor, fontSize: 18),
-                )
-              : null,
+            const SizedBox(
+              height: 60,
+            ),
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    validator: (value) => EmailValidator.validate(value!)
+                        ? null
+                        : "Please enter a valid email",
+                    maxLines: 1,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Enter your username',
+                      hintStyle: TextStyle(color: Colors.white),
+                      prefixIcon: const Icon(Icons.person),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orange),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
+                    maxLines: 1,
+                    obscureText: true,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.lock),
+                      hintText: 'Enter your password',
+                      hintStyle: TextStyle(color: Colors.white),
+                      iconColor: Colors.white,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orange),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {}
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.fromLTRB(40, 15, 40, 15),
+                    ),
+                    child: const Text(
+                      'Sign in',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );
