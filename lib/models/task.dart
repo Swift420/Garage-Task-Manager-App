@@ -41,37 +41,7 @@ class Task {
         assignedTask?.add(AssignedTask.fromJson(v));
       });
     }
-  } //snapshot.data()["assignedTask"] as List<AssignedTask.fromJson(json)>;
-
-  /* List<AssignedTask>.from(snapshot.data()["assignedTask"].map((item) {
-          AssignedTask(
-              name: item["name"],
-              taskType: item["taskType"],
-              employeeTask: item["employeeTask"],
-              isComplete: item["isComplete"],
-              vehicle: item["vehicle"]);
-        })); */
-  //json.decode(snapshot.data()["assignedTask"]);
-  //Map<String, AssignedTask>.from(json.decode(snapshot.data()["assignedTask"]));
-  //json.decode(snapshot.data()["assignedTask"]).cast<AssignedTask>();
-
-  //  snapshot.data()["assignedTask"].cast<List<AssignedTask>>();
-  //AssignedTask.f(snapshot.data()!["assignedTask"]),
-  //  snapshot.data()["assignedTask"].cast<AssignedTask>();
-  //List<AssignedTask>.from((json.decode(['assignedTask'])).map((x) => AssignedTask.fromJson(x))
-
-/*
-  Task.fromJson(Map<String, dynamic> json) {
-    title = json['title'];
-    owner = json['owner'];
-    time = json['time'];
-    if (json['assignedTask'] != null) {
-      assignedTask = <AssignedTask>[];
-      json['assignedTask'].forEach((v) {
-        assignedTask!.add(new AssignedTask.fromJson(v));
-      });
-    }
-  } */
+  }
   Task.fromJson(Map<String, dynamic> json) {
     owner = json['owner'];
     if (json['assignedTask'] != null) {

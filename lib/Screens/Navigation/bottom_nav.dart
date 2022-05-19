@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:garage/Screens/addToHome/add_to_home.dart';
 import 'package:garage/Screens/employee/employee_screen.dart';
 import 'package:garage/Screens/home/home.dart';
+import 'package:garage/Screens/login/login.dart';
 import 'package:garage/Screens/recentHistory/recent_history.dart';
+import 'package:garage/Screens/singleEmployee/single_employee.dart';
 import 'package:garage/models/task.dart';
+import 'package:garage/models/user_class.dart';
+import 'package:hive/hive.dart';
 
 class BottomNav extends StatefulWidget {
   //final Task task;
@@ -15,9 +19,11 @@ class BottomNav extends StatefulWidget {
 }
 
 class _BottomNavState extends State<BottomNav> {
+  Box box = Hive.box('userBox');
   int _currentIndex = 1;
   final firestoreInstance = FirebaseFirestore.instance;
   List _widgetOptions = [AddToHome(), Home(), EmployeeScreen()];
+  List _widgetOptions2 = [AddToHome(), Home(), SingleEmployee()];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,14 +50,24 @@ class _BottomNavState extends State<BottomNav> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(
-              right: 20.0,
-              top: 10,
-            ),
-            child: Icon(
-              Icons.logout,
-              size: 30,
+          InkWell(
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginPage(title: ""),
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(
+                right: 20.0,
+                top: 10,
+              ),
+              child: Icon(
+                Icons.logout,
+                size: 30,
+              ),
             ),
           ),
         ],
@@ -82,14 +98,25 @@ class _BottomNavState extends State<BottomNav> {
           ),
         ],
         onTap: (index) {
+          print(employeeList);
           setState(() {
             _currentIndex = index;
           });
           _onPressed();
         },
       ),
-      body: _widgetOptions.elementAt(_currentIndex),
+      body: box.get(99) == true
+          ? _widgetOptions2.elementAt(_currentIndex)
+          : _widgetOptions2.elementAt(_currentIndex),
     );
+  }
+
+  showwidget() {
+    if (box.get(99) == true) {
+      return AddToHome();
+    } else {
+      return null;
+    }
   }
 
   void _onPressed() {

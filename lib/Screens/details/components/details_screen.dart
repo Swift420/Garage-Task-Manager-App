@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:garage/Screens/home/home.dart';
 import 'package:garage/components/details_components/add_task.dart';
 import 'package:garage/constants.dart';
+import 'package:garage/main.dart';
 import 'package:garage/models/task.dart';
 import 'package:garage/models/task_class.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -60,7 +61,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       child: Text("Add New Task"),
                       onPressed: () {
                         setState(() {
-                          _addNewTaskModal(context, widget.task);
+                          if (box.get(99) == true) {
+                            _addNewTaskModal(context, widget.task);
+                          } else {
+                            showToast("You have to be admin to add Task");
+                          }
                         });
                       },
                     ),
@@ -79,16 +84,21 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         style: TextStyle(color: Colors.green[600]),
                       ),
                       onPressed: () async {
-                        if (numOfCompletedInspection == 0) {
-                          passInspection();
+                        if (box.get(99) == true) {
+                          if (numOfCompletedInspection == 0) {
+                            passInspection();
 
-                          removeFromVehicles();
-                          Future.delayed(Duration(seconds: 1), () {
-                            // <-- Delay here
-                            Navigator.pop(context);
-                          });
+                            removeFromVehicles();
+                            Future.delayed(Duration(seconds: 1), () {
+                              // <-- Delay here
+                              Navigator.pop(context);
+                            });
+                          } else {
+                            showToast(
+                                "Can only pass inspection if all tasks are green");
+                          }
                         } else {
-                          showToast();
+                          showToast("You have to be admin to pass Inspection");
                         }
 
                         //print(jsonEncode(widget.task.assignedTask));
@@ -159,12 +169,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Future removeFromVehicles() async {
     await FirebaseFirestore.instance
         .collection('vehicles')
-        .doc(widget.task.id)
+        .doc(widget.task.title)
         .delete();
   }
 
   Future passInspection() async {
-    DocumentReference docRef =
+    /*  DocumentReference docRef =
         await FirebaseFirestore.instance.collection('recentHistory').add({
       'title': widget.task.title,
       'owner': widget.task.owner,
@@ -177,10 +187,21 @@ class _DetailsScreenState extends State<DetailsScreen> {
         .collection('recentHistory')
         .doc(id)
         .update({'id': id});
+  */
+
+    FirebaseFirestore.instance
+        .collection("recentHistory")
+        .doc(widget.task.title)
+        .set({
+      'title': widget.task.title,
+      'owner': widget.task.owner,
+      'time': widget.task.time,
+      'assignedTask': widget.task.assignedTask?.map((a) => a.toJson()).toList()
+    });
   }
 
-  void showToast() => Fluttertoast.showToast(
-        msg: "Can only pass inspection if all tasks are green",
+  void showToast(String message) => Fluttertoast.showToast(
+        msg: message,
         fontSize: 18,
       );
 }

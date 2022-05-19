@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:garage/Screens/details/components/details_screen.dart';
 import 'package:garage/components/home_components/task_card.dart';
 import 'package:garage/constants.dart';
+import 'package:garage/main.dart';
 import 'package:garage/models/task.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -82,10 +83,13 @@ class _RecentHisotyVehiclesState extends State<RecentHisotyVehicles> {
                         print(recentVehiclesList[index].id);
                       },
                       onLongPress: () async {
-                        await FirebaseFirestore.instance
-                            .collection('recentHistory')
-                            .doc(recentVehiclesList[index].id)
-                            .delete();
+                        if (box.get(99) == true) {
+                          await FirebaseFirestore.instance
+                              .collection('recentHistory')
+                              .doc(recentVehiclesList[index].title)
+                              .delete();
+                        }
+
                         setState(() {
                           getRecentVehicleList();
                         });

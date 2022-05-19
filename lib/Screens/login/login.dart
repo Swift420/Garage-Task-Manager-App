@@ -1,5 +1,9 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:garage/Screens/Navigation/bottom_nav.dart';
+import 'package:garage/models/hive_user.dart';
+import 'package:hive_flutter/adapters.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required this.title}) : super(key: key);
@@ -10,8 +14,20 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  late Box userBox;
+  Box box = Hive.box('userBox');
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userBox = Hive.box("userBox");
+    //print(userBox.values);
+  }
+
   final _formKey = GlobalKey<FormState>();
   var rememberValue = false;
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +55,13 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 children: [
                   TextFormField(
-                    validator: (value) => EmailValidator.validate(value!)
-                        ? null
-                        : "Please enter a valid email",
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your username';
+                      }
+                      return null;
+                    },
+                    controller: _nameController,
                     maxLines: 1,
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
@@ -71,6 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     maxLines: 1,
                     obscureText: true,
+                    controller: _passwordController,
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       prefixIcon: const Icon(Icons.lock),
@@ -93,7 +114,36 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {}
+                      final storedUser = box.get(_nameController.text);
+                      //print(storedUser.password);
+
+                      if (_formKey.currentState!.validate()) {
+                        if (storedUser != null) {
+                          final hiveUser = storedUser as HiveUser;
+
+                          if (hiveUser.password == _passwordController.text) {
+                            print(box.get(99));
+                            if (box.get(99) == null) {
+                              box.put(99, hiveUser.isAdmin);
+                              box.put(98, hiveUser.username);
+                            } else {
+                              box.put(99, hiveUser.isAdmin);
+                              box.put(98, hiveUser.username);
+                            }
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const BottomNav(),
+                              ),
+                            );
+                          } else {
+                            showLoginToast();
+                          }
+                        } else {
+                          showLoginToast();
+                        }
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.fromLTRB(40, 15, 40, 15),
@@ -116,4 +166,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  void showLoginToast() =>
+      Fluttertoast.showToast(msg: "Please enter correct Username and Password");
 }

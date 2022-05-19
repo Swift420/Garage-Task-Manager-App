@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:garage/models/task.dart';
 import 'package:garage/models/task_class.dart';
+import 'package:hive/hive.dart';
 
 class AddToHome extends StatefulWidget {
   //final Task task;
@@ -18,6 +20,7 @@ class _AddToHomeState extends State<AddToHome> {
   TextEditingController _ownerController = TextEditingController();
   DateTime now = DateTime.now();
   Task? _task;
+  Box box = Hive.box('userBox');
 
   @override
   Widget build(BuildContext context) {
@@ -90,30 +93,41 @@ class _AddToHomeState extends State<AddToHome> {
                     side: BorderSide(width: 3, color: Colors.orange)),
                 child: Text("Add Vehicle"),
                 onPressed: () async {
-                  print(_vehicleController.text);
-                  if (_ownerController.text.isNotEmpty &&
-                      _vehicleController.text.isNotEmpty) {
-                    _task?.title = _vehicleController.text;
-                    _task?.owner = _ownerController.text;
-                    _task?.time = now;
-                    _task?.assignedTask = [];
+                  if (box.get(99) == true) {
+                    if (_ownerController.text.isNotEmpty &&
+                        _vehicleController.text.isNotEmpty) {
+                      _task?.title = _vehicleController.text;
+                      _task?.owner = _ownerController.text;
+                      _task?.time = now;
+                      _task?.assignedTask = [];
 
-                    DocumentReference docRef = await FirebaseFirestore.instance
-                        .collection('vehicles')
-                        .add({
-                      'title': _vehicleController.text,
-                      'owner': _ownerController.text,
-                      'time': now,
-                      'assignedTask': [],
-                    });
-                    String id = docRef.id;
+                      /*  DocumentReference docRef = await FirebaseFirestore
+                          .instance
+                          .collection('vehicles')
+                          .add({
+                        'title': _vehicleController.text,
+                        'owner': _ownerController.text,
+                        'time': now,
+                        'assignedTask': [],
+                      });
+                      String id = docRef.id;
 
-                    await FirebaseFirestore.instance
-                        .collection('vehicles')
-                        .doc(id)
-                        .update({'id': id});
+                      await FirebaseFirestore.instance
+                          .collection('vehicles')
+                          .doc(id)
+                          .update({'id': id}); */
 
-                    /* await FirebaseFirestore.instance
+                      FirebaseFirestore.instance
+                          .collection("vehicles")
+                          .doc(_vehicleController.text)
+                          .set({
+                        'title': _vehicleController.text,
+                        'owner': _ownerController.text,
+                        'time': now,
+                        'assignedTask': [],
+                      });
+
+                      /* await FirebaseFirestore.instance
                         .collection("vehicles")
                         .add({
                       'title': _vehicleController.text,
@@ -136,9 +150,9 @@ class _AddToHomeState extends State<AddToHome> {
                         },
                       ],
                     }); */
-                  }
-                  setState(() {
-                    /* recentTasks.insert(
+                    }
+                    setState(() {
+                      /* recentTasks.insert(
                         0,
                         Task(
                             title: _vehicleController.text,
@@ -148,9 +162,12 @@ class _AddToHomeState extends State<AddToHome> {
                             
                             );  */
 
-                    _ownerController.text = "";
-                    _vehicleController.text = "";
-                  });
+                      _ownerController.text = "";
+                      _vehicleController.text = "";
+                    });
+                  } else {
+                    showVehicleToast();
+                  }
                 },
               ),
             ),
@@ -159,4 +176,6 @@ class _AddToHomeState extends State<AddToHome> {
       ),
     );
   }
+
+  void showVehicleToast() => Fluttertoast.showToast(msg: "Only admin can add");
 }

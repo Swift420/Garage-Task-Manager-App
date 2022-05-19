@@ -47,7 +47,8 @@ class EmployeeCard extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      user.name,
+                      user.name!,
+                      //user.name,
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 18,

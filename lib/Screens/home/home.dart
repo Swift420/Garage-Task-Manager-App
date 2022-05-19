@@ -6,6 +6,7 @@ import 'package:garage/components/home_components/countdown_painter.dart';
 import 'package:garage/components/home_components/task_card.dart';
 import 'package:garage/constants.dart';
 import 'package:garage/models/task.dart';
+import 'package:garage/models/user_class.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math';
 
@@ -26,7 +27,8 @@ class _HomeState extends State<Home> {
   void didChangeDependencies() {
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
-    //getVehicleList();
+    getVehicleList();
+    getEmployeeList();
     // print(vehiclesList);
   }
 
@@ -92,14 +94,29 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Future getEmployeeList() async {
+    var data = await FirebaseFirestore.instance
+        .collection("users")
+        .orderBy("name")
+        .get();
+    if (this.mounted) {
+      setState(() {
+        employeeList =
+            List.from(data.docs.map((doc) => User.fromSnapshot(doc)));
+      });
+    }
+  }
+
   Future getVehicleList() async {
     var data = await FirebaseFirestore.instance
         .collection("vehicles")
         .orderBy("time", descending: true)
         .get();
-
-    setState(() {
-      vehiclesList = List.from(data.docs.map((doc) => Task.fromSnapshot(doc)));
-    });
+    if (this.mounted) {
+      setState(() {
+        vehiclesList =
+            List.from(data.docs.map((doc) => Task.fromSnapshot(doc)));
+      });
+    }
   }
 }

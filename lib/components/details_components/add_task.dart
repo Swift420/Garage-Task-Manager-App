@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:garage/constants.dart';
+import 'package:garage/main.dart';
 import 'package:garage/models/task.dart';
 import 'package:garage/models/task_class.dart';
 
@@ -16,8 +17,8 @@ class addTask extends StatefulWidget {
 }
 
 class _addTaskState extends State<addTask> {
-  List<String> employees = ["John", "Windu", "Palpetine", "Rex"];
-  String? selectedItem = "John";
+  List<String> employees = ["Maul", "Padme", "Palpetine", "Rex", "Ahsoka"];
+  String? selectedItem = "Maul";
   List<String> taskTypesList = ["Mechanical", "Electronical", "Trailer"];
   String? selectedTask = "Mechanical";
   TextEditingController _briefController = TextEditingController();
@@ -135,10 +136,11 @@ class _addTaskState extends State<addTask> {
               child: Text("Add Task"),
               onPressed: () {
                 print(widget.task.id);
+
                 setState(() {
                   FirebaseFirestore.instance
                       .collection("vehicles")
-                      .doc(widget.task.id)
+                      .doc(widget.task.title)
                       .update({
                     "assignedTask": FieldValue.arrayUnion([
                       {
@@ -150,6 +152,22 @@ class _addTaskState extends State<addTask> {
                       }
                     ])
                   });
+
+                  FirebaseFirestore.instance
+                      .collection("users")
+                      .doc(selectedItem!)
+                      .update({
+                    "userTasks": FieldValue.arrayUnion([
+                      {
+                        "name": selectedItem!,
+                        "taskType": selectedTask!,
+                        "employeeTask": _briefController.text,
+                        "isComplete": false,
+                        "vehicle": widget.task.title!
+                      }
+                    ])
+                  });
+
                   /*widget.task.assignedTask!.add(AssignedTask(
                       name: selectedItem!,
                       taskType: selectedTask!,
