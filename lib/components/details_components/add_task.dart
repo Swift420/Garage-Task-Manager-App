@@ -51,6 +51,7 @@ class _addTaskState extends State<addTask> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: TextFormField(
             controller: _briefController,
+            style: TextStyle(color: Colors.white),
             decoration: InputDecoration(
               //label: Text("Employee Name"),
               labelText: "Brief Desc of task",
