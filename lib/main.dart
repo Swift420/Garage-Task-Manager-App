@@ -16,36 +16,36 @@ Future<void> main() async {
   print("this prints first");
   print(box.keys);
 
-  /* box.put(
-      "Kenobi", HiveUser(username: "Kenobi", password: "goat", isAdmin: true));
+  if (box.get("Kenobi") == null) {
+    box.put("Kenobi",
+        HiveUser(username: "Kenobi", password: "goat", isAdmin: true));
+  }
+  if (box.get("Anakin") == null) {
+    box.put("Anakin",
+        HiveUser(username: "Anakin", password: "sand", isAdmin: true));
+  }
+  if (box.get("Ahsoka") == null) {
+    box.put("Ahsoka",
+        HiveUser(username: "Ahsoka", password: "snips", isAdmin: false));
+  }
+  if (box.get("Maul") == null) {
+    box.put(
+        "Maul", HiveUser(username: "Maul", password: "fear", isAdmin: false));
+  }
+  if (box.get("Padme") == null) {
+    box.put(
+        "Padme", HiveUser(username: "Padme", password: "luke", isAdmin: false));
+  }
 
-  box.put(
-      "Anakin", HiveUser(username: "Anakin", password: "sand", isAdmin: true));
-  box.put("Ahsoka",
-      HiveUser(username: "Ahsoka", password: "snips", isAdmin: false));
-  box.put("Maul", HiveUser(username: "Maul", password: "fear", isAdmin: false));
-  box.put(
-      "Padme", HiveUser(username: "Padme", password: "luke", isAdmin: false));
-  box.put("Palpetine",
-      HiveUser(username: "Palpetine", password: "treason", isAdmin: false));
-  box.put("Windu",
-      HiveUser(username: "Windu", password: "council", isAdmin: false));
-  box.put(
-      "Rex", HiveUser(username: "Rex", password: "soldier", isAdmin: false));
-  box.put("Grievious",
-      HiveUser(username: "Grievious", password: "saber", isAdmin: false));
-  box.put("Jar Jar",
-      HiveUser(username: "Jar Jar", password: "Misa", isAdmin: false));
-  box.put("Savage",
-      HiveUser(username: "Savage", password: "savage", isAdmin: false));
-  box.put("Jango",
-      HiveUser(username: "Jango", password: "headless", isAdmin: false));
-  box.put(
-      "Boba", HiveUser(username: "Boba", password: "father", isAdmin: false));
-  box.put(
-      "Dooku", HiveUser(username: "Dooku", password: "count", isAdmin: false));
-  box.put("Bane",
-      HiveUser(username: "Bane", password: "sharpshooter", isAdmin: false)); */
+  if (box.get("Palpetine") == null) {
+    box.put("Palpetine",
+        HiveUser(username: "Palpetine", password: "treason", isAdmin: false));
+  }
+  if (box.get("Rex") == null) {
+    box.put(
+        "Rex", HiveUser(username: "Rex", password: "soldier", isAdmin: false));
+  }
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MyApp());
